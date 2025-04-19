@@ -1,0 +1,28 @@
+{
+    "users": [
+        {
+            "id": "1",
+            "name": "Admin",
+            "email": "admin@odc.sn",
+            "password": "passer123",
+            "profile": "Admin"
+        },
+        {
+            "id": "2",
+            "name": "Vigile",
+            "email": "vigile@odc.sn",
+            "password": "vigile123",
+            "profile": "Vigile"
+        },
+        {
+            "id": "3",
+            "name": "Apprenant",
+            "email": "apprenant@odc.sn",
+            "password": "apprenant123",
+            "profile": "Apprenant"
+        }
+    ],
+    "promotions": [],
+    "referentiels": [],
+    "apprenants": []
+}
