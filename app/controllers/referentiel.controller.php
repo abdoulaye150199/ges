@@ -15,40 +15,51 @@ use App\Services;
 use App\Translate\fr;
 use App\Enums;
 
-// Affichage de la liste des référentiels de la promotion en cours
+// Affichage de la liste des référentiels
 function list_referentiels() {
-    global $model, $session_services;
+    global $model;
     
-    // Vérification des droits d'accès (Admin uniquement)
-    $user = check_profile(Enums\ADMIN);
+    // Vérification de l'authentification
+    $user = check_auth();
     
-    // Récupération de la promotion courante
-    $current_promotion = $model['get_current_promotion']();
+    // Récupération des référentiels
+    $referentiels = $model['get_all_referentiels']();
     
-    if (!$current_promotion) {
-        $session_services['set_flash_message']('info', 'Aucune promotion active. Veuillez d\'abord activer une promotion.');
-        redirect('?page=promotions');
-        return;
-    }
-    
-    // Récupération des référentiels de la promotion courante
-    $referentiels = $model['get_referentiels_by_promotion']($current_promotion['id']);
-    
-    // Filtrage des référentiels selon le critère de recherche
-    $search = $_GET['search'] ?? '';
-    if (!empty($search)) {
-        $referentiels = array_filter($referentiels, function ($referentiel) use ($search) {
-            return stripos($referentiel['name'], $search) !== false;
-        });
-    }
-    
-    // Affichage de la vue
+    // Rendu de la vue
     render('admin.layout.php', 'referentiel/list.html.php', [
         'user' => $user,
-        'current_promotion' => $current_promotion,
         'referentiels' => $referentiels,
-        'search' => $search
+        'active_menu' => 'referentiels'
     ]);
+}
+
+// Recherche des référentiels
+function search_referentiels() {
+    global $model;
+    
+    // Vérification si l'utilisateur est connecté
+    $user = check_auth();
+    
+    $query = $_GET['q'] ?? '';
+    $context = $_GET['context'] ?? 'all'; // 'all' or 'promotion'
+    
+    $referentiels = $model['search_referentiels']($query);
+    
+    if ($context === 'promotion') {
+        // Filter out already assigned referentiels if needed
+        $current_promotion = $model['get_current_promotion']();
+        if ($current_promotion) {
+            $assigned_refs = $model['get_referentiels_by_promotion']($current_promotion['id']);
+            $assigned_ids = array_column($assigned_refs, 'id');
+            $referentiels = array_filter($referentiels, function($ref) use ($assigned_ids) {
+                return !in_array($ref['id'], $assigned_ids);
+            });
+        }
+    }
+    
+    header('Content-Type: application/json');
+    echo json_encode(array_values($referentiels));
+    exit;
 }
 
 // Affichage de la liste de tous les référentiels

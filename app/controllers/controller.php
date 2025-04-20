@@ -20,11 +20,26 @@ function render($layout, $view, $data = []) {
     
     // Démarrage de la mise en tampon pour stocker la vue
     ob_start();
-    require_once __DIR__ . '/../views/' . $view;
+    require_once render_view($view);
     $content = ob_get_clean();
     
     // Chargement du layout avec le contenu de la vue
-    require_once __DIR__ . '/../views/layout/' . $layout;
+    require_once render_view($layout, true);
+}
+
+// Nouvelle fonction pour gérer le rendu des vues
+function render_view($file, $is_layout = false) {
+    if ($is_layout) {
+        $path = __DIR__ . '/../views/layout/' . $file;
+    } else {
+        $path = __DIR__ . '/../views/' . $file;
+    }
+    
+    if (!file_exists($path)) {
+        throw new \RuntimeException("Vue non trouvée : $path");
+    }
+    
+    return $path;
 }
 
 // Redirection vers une autre page
@@ -37,16 +52,16 @@ function redirect($url) {
 function check_auth() {
     global $session_services;
     
-    $session_services['start_session']();
+    $user = $session_services['get_session']('user');
     
-    if (!$session_services['is_logged_in']()) {
+    if (!$user) {
         redirect('?page=login');
     }
     
-    return $session_services['get_current_user']();
+    return $user;
 }
 
-// Vérification si l'utilisateur a le profil requis
+// Vérification du profil de l'utilisateur
 function check_profile($required_profile) {
     $user = check_auth();
     

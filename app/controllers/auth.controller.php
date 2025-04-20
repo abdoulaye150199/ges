@@ -19,11 +19,6 @@ use App\Enums;
 // Affichage de la page de connexion
 function login_page() {
     global $session_services;
-    
-    // L'authentification est déjà vérifiée dans l'index.php
-    // Si l'utilisateur arrive ici, c'est qu'il n'est pas connecté
-    
-    // Rendu de la page de connexion
     render('auth.layout.php', 'auth/login.html.php');
 }
 

@@ -26,4 +26,33 @@ if ($session_services['is_logged_in']() && in_array($page, $public_pages)) {
 }
 
 // Routage vers le contrôleur approprié
-App\Route\route($page);
+switch ($page) {
+    case 'promotions':
+        require_once __DIR__ . '/../app/controllers/promotion.controller.php';
+        \App\Controllers\list_promotions();
+        break;
+
+    case 'add_promotion':
+        require_once __DIR__ . '/../app/controllers/promotion.controller.php';
+        \App\Controllers\add_promotion();
+        break;
+
+    case 'toggle_promotion':
+        require_once __DIR__ . '/../app/controllers/promotion.controller.php';
+        \App\Controllers\toggle_promotion_status();
+        break;
+
+    case 'referentiels':
+        require_once __DIR__ . '/../app/controllers/referentiel.controller.php';
+        \App\Controllers\list_referentiels();
+        break;
+
+    case 'search_referentiels':
+        require_once __DIR__ . '/../app/controllers/referentiel.controller.php';
+        \App\Controllers\search_referentiels();
+        break;
+
+    default:
+        App\Route\route($page);
+        break;
+}

@@ -1,0 +1,34 @@
+/* Styles généraux */
+.referentiels-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* En-tête */
+.header {
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    color: #0E8F7E;
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.header .subtitle {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Barre de recherche et boutons d'action */
+.search-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* ...Le reste du CSS comme fourni... */

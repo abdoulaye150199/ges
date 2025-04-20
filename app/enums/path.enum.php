@@ -2,13 +2,17 @@
 
 namespace App\Enums;
 
-// Énumération des chemins dans le format procédural
-const VIEW_PATH = 'app/views/';
-const LAYOUT_PATH = 'app/views/layout/';
-const AUTH_VIEW_PATH = 'app/views/auth/';
-const PROMOTION_VIEW_PATH = 'app/views/promotion/';
-const REFERENTIEL_VIEW_PATH = 'app/views/referentiel/';
-const ERROR_PATH = 'app/views/error/'; 
-const DATA_PATH = __DIR__ . '/../../app/data/data.json';
-const ASSETS_PATH = 'public/assets/';
-const UPLOAD_PATH = 'public/assets/images/uploads/';
+enum Path: string
+{
+    case VIEW_PATH = 'app/views/';
+    case LAYOUT_PATH = 'app/views/layout/';
+    case AUTH_VIEW_PATH = 'app/views/auth/';
+    case PROMOTION_VIEW_PATH = 'app/views/promotion/';
+    case REFERENTIEL_VIEW_PATH = 'app/views/referentiel/';
+    case ERROR_PATH = 'app/views/error/';
+    case DATA_PATH = __DIR__ . '/../../app/data/data.json';
+    case ASSETS_PATH = 'public/assets/';
+    case UPLOAD_PATH = 'public/assets/images/uploads/';
+    case UPLOAD_DIR = __DIR__ . '/../../public/assets/images/uploads';
+    // Suppression de DATA_FILE car il a la même valeur que DATA_PATH
+}

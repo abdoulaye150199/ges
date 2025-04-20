@@ -72,5 +72,58 @@ $validator_services = [
         }, $fields);
         
         return $errors;
+    },
+    
+    'validate_promotion' => function(array $post_data, array $files): array {
+        $errors = [];
+        
+        // Validation du nom (obligatoire et unique)
+        if (empty($post_data['name'])) {
+            $errors[] = 'Le nom de la promotion est requis';
+        } else {
+            global $model;
+            if ($model['promotion_name_exists']($post_data['name'])) {
+                $errors[] = 'Ce nom de promotion existe déjà';
+            }
+        }
+        
+        // Validation des dates (obligatoires)
+        if (empty($post_data['date_debut'])) {
+            $errors[] = 'La date de début est requise';
+        }
+        
+        if (empty($post_data['date_fin'])) {
+            $errors[] = 'La date de fin est requise';
+        }
+        
+        if (!empty($post_data['date_debut']) && !empty($post_data['date_fin'])) {
+            if (strtotime($post_data['date_fin']) <= strtotime($post_data['date_debut'])) {
+                $errors[] = 'La date de fin doit être supérieure à la date de début';
+            }
+        }
+        
+        // Validation de l'image
+        if (empty($files['image']['name'])) {
+            $errors[] = 'L\'image de la promotion est requise';
+        } else {
+            $allowed_types = ['image/jpeg', 'image/png'];
+            if (!in_array($files['image']['type'], $allowed_types)) {
+                $errors[] = 'Le format de l\'image doit être JPG ou PNG';
+            }
+            
+            if ($files['image']['size'] > 2 * 1024 * 1024) { // 2MB
+                $errors[] = 'La taille de l\'image ne doit pas dépasser 2MB';
+            }
+        }
+        
+        // Validation des référentiels (au moins un requis)
+        if (empty($post_data['referentiels'])) {
+            $errors[] = 'Au moins un référentiel doit être sélectionné';
+        }
+        
+        return [
+            'valid' => empty($errors),
+            'errors' => $errors
+        ];
     }
 ];

@@ -22,7 +22,202 @@
             "profile": "Apprenant"
         }
     ],
-    "promotions": [],
-    "referentiels": [],
+    "promotions": [
+        {
+            "id": 1,
+            "name": "Promo 1 Dev Web",
+            "status": "active",
+            "image": "promo1.jpg",
+            "date_debut": "2024-01-01",
+            "date_fin": "2024-12-31",
+            "referentiels": [
+                1,
+                3
+            ],
+            "apprenants": [
+                {
+                    "id": 1,
+                    "name": "John Doe"
+                },
+                {
+                    "id": 2,
+                    "name": "Jane Smith"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "Promo 1 Data",
+            "status": "inactive",
+            "image": "promo2.jpg",
+            "date_debut": "2024-02-01",
+            "date_fin": "2024-12-31",
+            "referentiels": [
+                2
+            ],
+            "apprenants": [
+                {
+                    "id": 3,
+                    "name": "Alice Johnson"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "name": "Promo 3 R\u00e9ferents Digital",
+            "status": "inactive",
+            "image": "promo3.jpg",
+            "date_debut": "2024-03-01",
+            "date_fin": "2025-02-28",
+            "apprenants": [
+                {
+                    "id": 6,
+                    "name": "David Lee"
+                },
+                {
+                    "id": 7,
+                    "name": "Emma Davis"
+                },
+                {
+                    "id": 8,
+                    "name": "Frank Miller"
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "name": "Promo 4 DevOps",
+            "status": "inactive",
+            "image": "promo4.jpg",
+            "date_debut": "2023-11-01",
+            "date_fin": "2024-10-31",
+            "apprenants": []
+        },
+        {
+            "id": 5,
+            "name": "Promo 5 IA",
+            "status": "inactive",
+            "image": "promo5.jpg",
+            "date_debut": "2024-02-01",
+            "date_fin": "2025-01-31",
+            "apprenants": [
+                {
+                    "id": 9,
+                    "name": "Grace Wilson"
+                },
+                {
+                    "id": 10,
+                    "name": "Henry Ford"
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "name": "Promo 7 IA",
+            "status": "inactive",
+            "image": "promo5.jpg",
+            "date_debut": "2024-02-01",
+            "date_fin": "2025-01-31",
+            "apprenants": [
+                {
+                    "id": 9,
+                    "name": "Grace Wilson"
+                },
+                {
+                    "id": 10,
+                    "name": "Henry Ford"
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "name": "Promo 9 IA",
+            "status": "inactive",
+            "image": "promo5.jpg",
+            "date_debut": "2024-02-01",
+            "date_fin": "2025-01-31",
+            "apprenants": [
+                {
+                    "id": 9,
+                    "name": "Grace Wilson"
+                },
+                {
+                    "id": 10,
+                    "name": "Henry Ford"
+                }
+            ]
+        },
+        {
+            "name": "promotion 2025",
+            "date_debut": "2025-04-20",
+            "date_fin": "2025-05-02",
+            "image": "680469198a7bb.png",
+            "status": "inactive",
+            "apprenants": [],
+            "id": 6
+        },
+        {
+            "name": "promotion 2025",
+            "date_debut": "2025-04-20",
+            "date_fin": "2025-04-22",
+            "image": "6804693d0e1f2.png",
+            "status": "inactive",
+            "apprenants": [],
+            "id": 7
+        },
+        {
+            "name": "promotion 2025",
+            "date_debut": "2025-04-20",
+            "date_fin": "2025-04-22",
+            "image": "68046a0ab9634.png",
+            "status": "inactive",
+            "apprenants": [],
+            "id": 8
+        },
+        {
+            "name": "promotion 2025",
+            "date_debut": "2025-04-20",
+            "date_fin": "2025-04-24",
+            "image": "68046adce3198.png",
+            "status": "inactive",
+            "apprenants": [],
+            "id": 9
+        },
+        {
+            "name": "promotion 2028",
+            "date_debut": "2025-04-20",
+            "date_fin": "2025-04-30",
+            "image": "68046f32b206a.png",
+            "status": "inactive",
+            "apprenants": [],
+            "id": 10
+        }
+    ],
+    "referentiels": [
+        {
+            "id": 1,
+            "name": "R\u00e9f\u00e9rentiel Dev Web",
+            "description": "D\u00e9veloppement d'applications web",
+            "status": "active"
+        },
+        {
+            "id": 2,
+            "name": "R\u00e9f\u00e9rentiel Data",
+            "description": "Science des donn\u00e9es et IA",
+            "status": "active"
+        },
+        {
+            "id": 3,
+            "name": "R\u00e9f\u00e9rentiel DevOps",
+            "description": "Administration syst\u00e8me et d\u00e9ploiement",
+            "status": "active"
+        },
+        {
+            "id": 4,
+            "name": "R\u00e9f\u00e9rentiel Mobile",
+            "description": "D\u00e9veloppement d'applications mobiles",
+            "status": "active"
+        }
+    ],
     "apprenants": []
 }

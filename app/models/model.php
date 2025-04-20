@@ -6,13 +6,15 @@ require_once __DIR__ . '/../enums/path.enum.php';
 require_once __DIR__ . '/../enums/status.enum.php';
 require_once __DIR__ . '/../enums/profile.enum.php';
 
-use App\Enums;
+use App\Enums\Path;
+use App\Enums\Status;
+use App\Enums\Profile;
 
 // Collection de toutes les fonctions modèles pour l'application
 $model = [
     // Fonctions de base pour manipuler les données
     'read_data' => function () {
-        if (!file_exists(Enums\DATA_PATH)) {
+        if (!file_exists(Path::DATA_PATH->value)) {
             // Si le fichier n'existe pas, on renvoie une structure par défaut
             return [
                 'users' => [],
@@ -22,7 +24,7 @@ $model = [
             ];
         }
         
-        $json_data = file_get_contents(Enums\DATA_PATH);
+        $json_data = file_get_contents(Path::DATA_PATH->value);
         $data = json_decode($json_data, true);
         
         if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
@@ -40,13 +42,13 @@ $model = [
     
     'write_data' => function ($data) {
         // Vérifier si le dossier data existe, sinon le créer
-        $data_dir = dirname(Enums\DATA_PATH);
+        $data_dir = dirname(Path::DATA_PATH->value);
         if (!is_dir($data_dir)) {
             mkdir($data_dir, 0777, true);
         }
         
         $json_data = json_encode($data, JSON_PRETTY_PRINT);
-        return file_put_contents(Enums\DATA_PATH, $json_data) !== false;
+        return file_put_contents(Path::DATA_PATH->value, $json_data) !== false;
     },
     
     'generate_id' => function () {
@@ -142,38 +144,35 @@ $model = [
         return !empty($filtered_promotions) ? reset($filtered_promotions) : null;
     },
     
-    'promotion_name_exists' => function ($name, $exclude_id = null) use (&$model) {
+    'promotion_name_exists' => function(string $name) use (&$model): bool {
         $data = $model['read_data']();
         
-        // Utiliser array_filter au lieu de foreach
-        $filtered_promotions = array_filter($data['promotions'] ?? [], function ($promotion) use ($name, $exclude_id) {
-            return strtolower($promotion['name']) === strtolower($name) && ($exclude_id === null || $promotion['id'] !== $exclude_id);
-        });
-        
-        return !empty($filtered_promotions);
-    },
-    
-    'create_promotion' => function ($promotion_data) use (&$model) {
-        $data = $model['read_data']();
-        
-        $new_promotion = [
-            'id' => $model['generate_id'](),
-            'name' => $promotion_data['name'],
-            'description' => $promotion_data['description'],
-            'date_debut' => $promotion_data['date_debut'],
-            'date_fin' => $promotion_data['date_fin'],
-            'image' => $promotion_data['image'],
-            'referentiels' => [],
-            'status' => Enums\INACTIVE  // Statut inactif par défaut
-        ];
-        
-        $data['promotions'][] = $new_promotion;
-        
-        if ($model['write_data']($data)) {
-            return $new_promotion;
+        foreach ($data['promotions'] as $promotion) {
+            if (strtolower($promotion['name']) === strtolower($name)) {
+                return true;
+            }
         }
         
-        return null;
+        return false;
+    },
+    
+    'create_promotion' => function(array $promotion_data) use (&$model) {
+        $data = $model['read_data']();
+        
+        // Générer un nouvel ID
+        $max_id = 0;
+        foreach ($data['promotions'] as $promotion) {
+            $max_id = max($max_id, (int)$promotion['id']);
+        }
+        
+        $promotion_data['id'] = $max_id + 1;
+        $promotion_data['status'] = 'inactive'; // Statut inactif par défaut
+        
+        // Ajouter la promotion
+        $data['promotions'][] = $promotion_data;
+        
+        // Sauvegarder les données
+        return $model['write_data']($data);
     },
     
     'update_promotion' => function ($id, $promotion_data) use (&$model) {
@@ -203,31 +202,58 @@ $model = [
         return null;
     },
     
-    'toggle_promotion_status' => function ($id) use (&$model) {
+    'toggle_promotion_status' => function(int $promotion_id) use (&$model) {
         $data = $model['read_data']();
         
-        // Trouver l'index de la promotion
-        $promotion_indices = array_keys(array_filter($data['promotions'], function($promotion) use ($id) {
-            return $promotion['id'] === $id;
-        }));
+        // Trouver la promotion à modifier
+        $target_promotion = null;
+        $target_index = null;
         
-        if (empty($promotion_indices)) {
+        foreach ($data['promotions'] as $index => $promotion) {
+            if ((int)$promotion['id'] === $promotion_id) {
+                $target_promotion = $promotion;
+                $target_index = $index;
+                break;
+            }
+        }
+        
+        if ($target_index === null) {
             return false;
         }
         
-        $promotion_index = reset($promotion_indices);
+        // Si la promotion est inactive
+        if ($target_promotion['status'] === Status::INACTIVE->value) {
+            // Désactiver toutes les promotions
+            $data['promotions'] = array_map(function($p) {
+                $p['status'] = Status::INACTIVE->value;
+                return $p;
+            }, $data['promotions']);
+            
+            // Activer la promotion ciblée
+            $data['promotions'][$target_index]['status'] = Status::ACTIVE->value;
+        } else {
+            // Si la promotion est active, la désactiver
+            $data['promotions'][$target_index]['status'] = Status::INACTIVE->value;
+        }
         
-        // Inverser le statut
-        $current_status = $data['promotions'][$promotion_index]['status'];
-        $new_status = ($current_status === Enums\ACTIVE) ? Enums\INACTIVE : Enums\ACTIVE;
-        
-        $data['promotions'][$promotion_index]['status'] = $new_status;
-        
+        // Sauvegarder les modifications
         if ($model['write_data']($data)) {
-            return $data['promotions'][$promotion_index];
+            return $data['promotions'][$target_index];
         }
         
         return null;
+    },
+    
+    'search_promotions' => function($search_term) use (&$model) {
+        $promotions = $model['get_all_promotions']();
+        
+        if (empty($search_term)) {
+            return $promotions;
+        }
+        
+        return array_values(array_filter($promotions, function($promotion) use ($search_term) {
+            return stripos($promotion['name'], $search_term) !== false;
+        }));
     },
     
     // Fonctions pour les référentiels
@@ -333,6 +359,18 @@ $model = [
         return $model['write_data']($data);
     },
     
+    'search_referentiels' => function(string $query) use (&$model) {
+        $referentiels = $model['get_all_referentiels']();
+        if (empty($query)) {
+            return $referentiels;
+        }
+        
+        return array_filter($referentiels, function($ref) use ($query) {
+            return stripos($ref['name'], $query) !== false || 
+                   stripos($ref['description'], $query) !== false;
+        });
+    },
+    
     // Fonction pour récupérer la promotion active courante
     'get_current_promotion' => function () use (&$model) {
         $data = $model['read_data']();
@@ -436,5 +474,30 @@ $model = [
         $count = count($data['apprenants'] ?? []) + 1;
         
         return 'ODC-' . $year . '-' . str_pad($count, 4, '0', STR_PAD_LEFT);
+    },
+    
+    'get_statistics' => function() use (&$model) {
+        $data = $model['read_data']();
+        
+        // Trouver la promotion active
+        $active_promotions = array_filter($data['promotions'], function($promotion) {
+            return $promotion['status'] === 'active';
+        });
+        $active_promotion = reset($active_promotions);
+        
+        // Calculer les statistiques
+        $stats = [
+            'active_learners' => 0,
+            'total_referentials' => count($data['referentiels'] ?? []),
+            'active_promotions' => count($active_promotions),
+            'total_promotions' => count($data['promotions'] ?? [])
+        ];
+        
+        // Ajouter le nombre d'apprenants de la promotion active
+        if ($active_promotion) {
+            $stats['active_learners'] = count($active_promotion['apprenants'] ?? []);
+        }
+        
+        return $stats;
     }
 ];

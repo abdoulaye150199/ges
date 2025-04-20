@@ -2,7 +2,9 @@
 
 namespace App\Enums;
 
-// Énumération des profils utilisateurs dans le format procédural
-const ADMIN = 'Admin';
-const VIGILE = 'Vigile';
-const APPRENANT = 'Apprenant';
+enum Profile: string
+{
+    case ADMIN = 'Admin';
+    case VIGILE = 'Vigile';
+    case APPRENANT = 'Apprenant';
+}
